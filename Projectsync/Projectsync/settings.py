@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
 
     'Authentication_app',
+    'Admin_app'
 ]
 
 MIDDLEWARE = [
@@ -145,8 +146,10 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    
+   'http://localhost:5173'
 ]
+
+# CORS_ALLOW_ALL_ORIGINS = True
 
 
 CORS_ALLOW_METHODS = [
