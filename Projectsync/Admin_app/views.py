@@ -20,7 +20,6 @@ class AdminPermission(BasePermission):
             auth = JWTAuthentication()
             user,token = auth.authenticate(request)
             role = token.payload.get('role')
-            print('yes it working ')
 
             if role :
                 print(role,'role')
@@ -38,7 +37,6 @@ class AdminPermission(BasePermission):
 @permission_classes([IsAuthenticated,AdminPermission])
 def GetUsers(request):
     
-    print('yes get user working')
     user = CustomUser.objects.filter(is_superuser = False)
     response = UsersSerializer(user, many = True)
     
