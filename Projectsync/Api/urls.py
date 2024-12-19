@@ -14,6 +14,7 @@ urlpatterns = [
     path('signup/',SignUp,name='signup'),
     
     path('getusers/',GetUsers,name='getusers'),
+    path('userblockunblock/',UserBlockUnblock,name='userblockunblock'),
     
     
 ]

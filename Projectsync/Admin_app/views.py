@@ -12,3 +12,24 @@ def GetUsers(request):
     response = UsersSerializer(user, many = True)
     
     return Response (response.data, status=status.HTTP_200_OK)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def UserBlockUnblock(request):
+    
+    id = request.data
+    
+    if not id :
+        return Response("User id required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user = CustomUser.objects.get(id=id)
+        if user.is_active:
+            user.is_active = False
+        else:
+            user.is_active = True
+        user.save()
+        return Response({"message":"User status updated"},status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+    
+    
