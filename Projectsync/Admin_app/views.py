@@ -5,11 +5,40 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from Authentication_app.models import CustomUser
 from . serializer import *
+from rest_framework.permissions import BasePermission
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import PermissionDenied,AuthenticationFailed
 
+#* ................... Admin Permission checking , Custom validation ...................
+
+class AdminPermission(BasePermission):
+    
+    def has_permission(self, request, view):
+        
+        try:
+            
+            auth = JWTAuthentication()
+            user,token = auth.authenticate(request)
+            role = token.payload.get('role')
+            print('yes it working ')
+
+            if role :
+                print(role,'role')
+                return True
+            else:
+                raise PermissionDenied("You do not have permission to access this resource.")
+
+        except AuthenticationFailed:
+            raise PermissionDenied("Invalid token or token missing.")
+        except Exception as e:
+            raise PermissionDenied(f"Error occurred: {str(e)}")
+ 
 #* ................... Get All Users For Admin...................
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated,AdminPermission])
 def GetUsers(request):
+    
+    print('yes get user working')
     user = CustomUser.objects.filter(is_superuser = False)
     response = UsersSerializer(user, many = True)
     
@@ -19,7 +48,7 @@ def GetUsers(request):
 #* ................... User Block/Unblock ...................
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated,AdminPermission])
 def UserBlockUnblock(request):
     
     id = request.data
@@ -40,7 +69,7 @@ def UserBlockUnblock(request):
     
 #* ................... User Permission Management...................
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated,AdminPermission])
 def UserPermission(request):
     
     id = request.data
