@@ -15,6 +15,7 @@ urlpatterns = [
     
     path('getusers/',GetUsers,name='getusers'),
     path('userblockunblock/',UserBlockUnblock,name='userblockunblock'),
+    path('userpermission/',UserPermission,name='userpermission'),
     
     
 ]
