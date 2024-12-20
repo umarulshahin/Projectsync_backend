@@ -10,14 +10,13 @@ class ProjectsSerializer(serializers.ModelSerializer):
         
     def validate(self, attrs):
 
-        basic_pattern = r'^[A-Za-z][A-Za-z0-9_!@#$%^&*(),.?":{}|<>-]*$'
-        discription_pattern = r'^(?!\s*$).+'
+        basic_pattern = r'^(?!\s*$).+'
 
         if not attrs['title'] or not attrs['description'] or not attrs['start_date'] or not attrs['end_date'] or not attrs['created_by']:
             raise serializers.ValidationError('All fields are required.')
         elif not re.match(basic_pattern,attrs['title']):
             raise serializers.ValidationError({"error":"Title must start with a letter and be at least 3 characters long, containing only letters, numbers, or underscores."})
-        elif not re.match(discription_pattern,attrs['description']):
+        elif not re.match(basic_pattern,attrs['description']):
             raise serializers.ValidationError({"error":"Input cannot be empty or contain only spaces. It must include at least one letter, number, or symbol."})
         elif date.today() > attrs['start_date']:
             raise serializers.ValidationError({'error': "Start date cannot be in the past."})
@@ -35,4 +34,16 @@ class ProjectsSerializer(serializers.ModelSerializer):
             created_by = validated_data['created_by'],
         )
         project.save()
-        return validated_data
+        return project
+    
+class EmployeesSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CustomUser
+        fields = ['id','username']
+        
+class ProjectTeamSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ProjectTeam
+        fields = ['project','employee']

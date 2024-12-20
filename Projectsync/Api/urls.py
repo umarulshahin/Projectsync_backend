@@ -24,7 +24,6 @@ urlpatterns = [
     
     path('get_user/',Get_User,name='get_user'),
     path('createproject/',Create_Project,name='createproject'),
-    
-    
+    path('getemployee/',Get_Employees,name='getemployee'),
     
 ]

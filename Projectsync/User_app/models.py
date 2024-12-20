@@ -15,3 +15,7 @@ class Projects(models.Model):
 
     class Meta:
         ordering = ['-id']
+
+class ProjectTeam(models.Model):
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, related_name='project')
+    employee = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='employee')
