@@ -8,7 +8,7 @@ from Admin_app.serializer import UsersSerializer
 from .serializer import *
 
 
-#* ................... Get User Details ...................
+#* ................... Get User Details and related projects  ...................
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def Get_User(request):
@@ -17,9 +17,27 @@ def Get_User(request):
     if not id :
         return Response("User id required",status=status.HTTP_400_BAD_REQUEST)  
     try:
+        #* getting User dippend on the user
         user = CustomUser.objects.get(id=id)
         serializer = UsersSerializer(user)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        #* getting project dippend on the user 
+        
+        projects = ProjectTeam.objects.filter(employee=id).select_related('project')
+        
+        #* Extract the projects only 
+        project =[pro.project for pro in projects]
+        project_serializer = ProjectsSerializer(project,many=True)
+        
+        
+        data = {
+            'user_data':serializer.data,
+            'project_data':project_serializer.data,
+        }
+        
+        return Response(data,status=status.HTTP_200_OK)
+    
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
 
@@ -52,16 +70,17 @@ def Create_Project(request):
     elif not data:
         return Response("Project data required",status=status.HTTP_400_BAD_REQUEST)
     
-    data['created_by'] = user.id
+    # userdata = CustomUser.objects.get(id=user.id)
+    # data['created_by'] = userdata.id
     team = list(data.get('team[]'))
-  
+    print(data,'data')
     if str(user.id) not in team:
         team.append(user.id)
     try:
         
         #* project created here 
         
-        serializer = ProjectsSerializer(data=data)
+        serializer = ProjectsSerializer(data=data,context={'request': request})
         if serializer.is_valid():
             projectdata = serializer.save()  #* This returns the model instance, not a dict
             
@@ -88,3 +107,22 @@ def Create_Project(request):
            projectdata.delete()
         
         return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+#* ................... Delete Project ...................
+@permission_classes([IsAuthenticated])
+@api_view(['DELETE']) 
+def DeleteProject(request):
+    
+    id = request.data.get('id')
+    print(id,'data')
+    if not id:
+        return Response("Project id required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+        project = Projects.objects.get(id=id)
+        project.delete()
+        return Response("Project deleted successfully",status=status.HTTP_200_OK)
+    except Projects.DoesNotExist:
+        return Response("Project not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
