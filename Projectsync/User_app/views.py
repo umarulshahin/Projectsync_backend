@@ -126,3 +126,29 @@ def DeleteProject(request):
         return Response("Project not found",status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+
+#* ................... Project Status Management ...................
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def  ProjectstatusManagement(request):
+    
+    id = request.data
+    
+    if not id :
+        return Response("Project id required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+        project = Projects.objects.get(id=id)
+        if project.status == 'planned':
+            project.status = 'active'
+        elif project.status == 'active':
+            project.status = 'Completed'
+        project.save()
+        return Response("Project status updated successfully",status=status.HTTP_200_OK)
+        
+    except Projects.DoesNotExist:
+        return Response("Project not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+        

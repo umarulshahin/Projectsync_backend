@@ -26,5 +26,7 @@ urlpatterns = [
     path('createproject/',Create_Project,name='createproject'),
     path('getemployee/',Get_Employees,name='getemployee'),
     path('deleteproject/',DeleteProject,name='deleteproject'),
+    path('projectstatus/',ProjectstatusManagement,name='projectstatus')
+    
     
 ]
