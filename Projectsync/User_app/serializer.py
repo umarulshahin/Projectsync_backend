@@ -34,8 +34,6 @@ class ProjectsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"error":"Title must start with a letter and be at least 3 characters long, containing only letters, numbers, or underscores."})
         elif not re.match(basic_pattern,attrs['description']):
             raise serializers.ValidationError({"error":"Input cannot be empty or contain only spaces. It must include at least one letter, number, or symbol."})
-        elif date.today() > attrs['start_date']:
-            raise serializers.ValidationError({'error': "Start date cannot be in the past."})
         elif attrs['start_date'] > attrs['end_date']:
             raise serializers.ValidationError({'error': "Start date cannot be greater than end date."})
         return attrs

@@ -152,3 +152,23 @@ def  ProjectstatusManagement(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
         
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def EditProject(request):
+    data = request.data
+    print(data,'data')
+    if not data:
+        return Response("Project data required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+        project = Projects.objects.get(id=data['id'])
+        serializer = ProjectsSerializer(project,data=data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Project updated successfully",status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    except Projects.DoesNotExist:
+        return Response("Project not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+    
