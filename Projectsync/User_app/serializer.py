@@ -12,10 +12,10 @@ class EmployeesSerializer(serializers.ModelSerializer):
         
 
 class ProjectTeamSerializer(serializers.ModelSerializer):
-    
+    employee = EmployeesSerializer()
     class Meta:
         model = ProjectTeam
-        fields = ['project','employee']
+        fields = ['id','project','employee']
 class ProjectsSerializer(serializers.ModelSerializer):
     
     team = ProjectTeamSerializer(read_only=True,many=True)
@@ -55,3 +55,4 @@ class ProjectsSerializer(serializers.ModelSerializer):
         project.save()
         return project
  
+

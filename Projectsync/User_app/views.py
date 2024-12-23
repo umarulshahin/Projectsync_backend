@@ -152,11 +152,12 @@ def  ProjectstatusManagement(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
         
+#* ......................... Edit project details .......................
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])
 def EditProject(request):
+    
     data = request.data
-    print(data,'data')
     if not data:
         return Response("Project data required",status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -172,3 +173,45 @@ def EditProject(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
     
+#* .................... Get project related users (project team) ..................
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def GetProjectTeam(request):
+    
+    id = request.GET.get('id')
+    if not id:
+        return Response('Project id required',status=status.HTTP_400_BAD_REQUEST)
+    
+    try: 
+        
+        users = ProjectTeam.objects.filter(project=id).prefetch_related('employee')
+      
+        serializer = ProjectTeamSerializer(users,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    except ProjectTeam.DoesNotExist:
+        return Response("Project id  not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#*........................ Remove Project Team member ...................
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def RemoveTeamMember(reques):
+    
+    id = reques.data
+    if not id :
+        return Response("Project id required",status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        
+        ProjectTeam.objects.filter(id=id).delete()
+        return Response("Team Member Removed successfully",status=status.HTTP_200_OK)
+
+    except ProjectTeam.DoesNotExist:
+        return Response("Project team membet  not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
