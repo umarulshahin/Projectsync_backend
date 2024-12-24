@@ -29,7 +29,8 @@ urlpatterns = [
     path('projectstatus/',ProjectstatusManagement,name='projectstatus'),
     path('editproject/',EditProject,name='editproject'),
     path('getprojectteam/',GetProjectTeam,name='getprojectteam'),
-    path('removeteammember/',RemoveTeamMember,name='removeteammember')
+    path('removeteammember/',RemoveTeamMember,name='removeteammember'),
+    path('addnewmember/',AddNewMemeber,name='addnewmember')
     
     
 ]

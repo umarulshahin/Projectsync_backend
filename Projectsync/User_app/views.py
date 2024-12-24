@@ -69,11 +69,9 @@ def Create_Project(request):
         return Response("User required",status=status.HTTP_400_BAD_REQUEST)
     elif not data:
         return Response("Project data required",status=status.HTTP_400_BAD_REQUEST)
-    
-    # userdata = CustomUser.objects.get(id=user.id)
-    # data['created_by'] = userdata.id
+ 
     team = list(data.get('team[]'))
-    print(data,'data')
+    
     if str(user.id) not in team:
         team.append(user.id)
     try:
@@ -215,3 +213,43 @@ def RemoveTeamMember(reques):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+#* ........................... Add New Team Member ........................
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def AddNewMemeber(request):
+    
+    data = request.data
+    if not data:
+        return Response("data required",status=status.HTTP_400_BAD_REQUEST)
+
+    members = data.get('members')
+    project_id = data.get('project_id')
+  
+    
+    try:
+        
+        project = Projects.objects.get(id=project_id)
+        
+        Team_list=[]
+        for member in members:
+            
+            employee = CustomUser.objects.get(id = member['value'])
+            team = ProjectTeam(project=project,employee=employee)
+            Team_list.append(team)
+            
+        if Team_list:
+            ProjectTeam.objects.bulk_create(Team_list)
+            
+            return Response("Team Members updated successfully",status=status.HTTP_200_OK)
+
+    except CustomUser.DoesNotExist:
+        return Response("User not find",status=status.HTTP_400_BAD_REQUEST)
+    except ProjectTeam.DoesNotExist:
+        return Response("Project not find",status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+    
+        
+    
