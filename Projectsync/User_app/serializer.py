@@ -58,16 +58,20 @@ class ProjectsSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     
+    created_by = EmployeesSerializer(read_only=True)
+    assigned_to = EmployeesSerializer(read_only=True)
+    Project = ProjectsSerializer(read_only=True)
+    
     class Meta:
          
         model = ProjectTask
         fields = ['id','title','description','created_by','status','priority','assigned_to','created_at','Project']
         
     def validate(self,attrs):
-        
+        print(attrs,'attrs')
         base_pattern = r'^(?!\s*$).+'
         
-        if not attrs['title'] or not attrs['description'] or not attrs['priority'] or not attrs['assigned_to'] or not attrs['Project']: 
+        if not attrs['title'] or not attrs['description'] or not attrs['priority']: 
             raise serializers.ValidationError('all fields are required,')
         
         elif not re.match(base_pattern,attrs['title']):
@@ -76,3 +80,19 @@ class TaskSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'error':'description cannot be empty or contain only spaces. It must include at least one letter, number, or symbol.'})
          
         return attrs
+    def create(self, validated_data):
+          
+        request = self.context.get('request')
+        project = self.context.get('project')
+        assigned_to = self.context.get('assigned_to')
+        
+        if not request or not request.user:
+            raise serializers.ValidationError("User is required")
+            
+        task = ProjectTask.objects.create(created_by=request.user,
+                                          title = validated_data['title'],
+                                          description = validated_data['description'],
+                                          priority = validated_data['priority'],
+                                          assigned_to = assigned_to,
+                                          Project =project)
+        return task

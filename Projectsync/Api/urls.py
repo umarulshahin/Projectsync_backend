@@ -31,7 +31,8 @@ urlpatterns = [
     path('getprojectteam/',GetProjectTeam,name='getprojectteam'),
     path('removeteammember/',RemoveTeamMember,name='removeteammember'),
     path('addnewmember/',AddNewMemeber,name='addnewmember'),
-    path('addnewtask/',AddNewTask,name='addnewtask')
+    path('addnewtask/',AddNewTask,name='addnewtask'),
+    path('Get_Tasks/',Get_Tasks,name='get_tasks')
     
     
 ]

@@ -256,7 +256,7 @@ def AddNewMemeber(request):
 def AddNewTask(request):
     
     data = request.data
-    print(data)
+
     if not data:
         return Response("data required",status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -264,11 +264,13 @@ def AddNewTask(request):
         user = request.user
         project_id = data.get('project_id')
         assign_to = data.get('assignedTo')
+        
         if  user.is_anonymous:
             return Response("User required",status=status.HTTP_400_BAD_REQUEST)       
         elif not project_id or not assign_to:
             return Response("Project id and assign to required",status=status.HTTP_400_BAD_REQUEST) 
         else:
+            
             try:
                 
                project = Projects.objects.get(id=project_id)
@@ -289,14 +291,14 @@ def AddNewTask(request):
             task ={
                 'title' : data.get('title'),
                 'description' : data.get('description'),
-                'created_by' : created_by.id,
                 'priority' : data.get('priority'),
                 'assigned_to' : assign.id,
                 'Project' : project.id
                 
             }
             print(task)
-            serializer = TaskSerializer(data=task)
+            
+            serializer = TaskSerializer(data=task,context={'request': request,'assigned_to':assign,'project':project})
             if serializer.is_valid():
                 serializer.save()
                 return Response("Task Added successfully",status=status.HTTP_201_CREATED)
@@ -305,3 +307,24 @@ def AddNewTask(request):
 
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def Get_Tasks(request):
+    
+    id = request.GET.get('id')
+ 
+    if not id :
+         return Response("Project id required",status=status.HTTP_400_BAD_REQUEST)
+   
+    try:
+        tasks = ProjectTask.objects.filter(Project=id)
+        serializer = TaskSerializer(tasks,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    except ProjectTask.DoesNotExist:
+        return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
