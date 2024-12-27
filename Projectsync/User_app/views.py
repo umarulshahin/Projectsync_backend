@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from Authentication_app.models import CustomUser
 from Admin_app.serializer import UsersSerializer
 from .serializer import *
-
+from django.db.models import Q
 
 #* ................... Get User Details and related projects  ...................
 @api_view(['GET'])
@@ -251,5 +251,57 @@ def AddNewMemeber(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
     
-        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def AddNewTask(request):
     
+    data = request.data
+    print(data)
+    if not data:
+        return Response("data required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+        
+        user = request.user
+        project_id = data.get('project_id')
+        assign_to = data.get('assignedTo')
+        if  user.is_anonymous:
+            return Response("User required",status=status.HTTP_400_BAD_REQUEST)       
+        elif not project_id or not assign_to:
+            return Response("Project id and assign to required",status=status.HTTP_400_BAD_REQUEST) 
+        else:
+            try:
+                
+               project = Projects.objects.get(id=project_id)
+            except Projects.DoesNotExist:
+                return Response('project not found',status=status.HTTP_404_NOT_FOUND)
+            
+            try:
+                created_by = CustomUser.objects.get(Q(id=user.id) & (Q(is_permission=True) | Q (is_staff=True))) #* here checking user have permission or user is admin 
+
+            except CustomUser.DoesNotExist:
+                 return Response('Created_by or assign to not found',status=status.HTTP_400_BAD_REQUEST)
+            try:
+                
+               assign = CustomUser.objects.get(id=assign_to)
+            except CustomUser.DoesNotExist:
+                 return Response(' assign to not found',status=status.HTTP_400_BAD_REQUEST)
+            
+            task ={
+                'title' : data.get('title'),
+                'description' : data.get('description'),
+                'created_by' : created_by.id,
+                'priority' : data.get('priority'),
+                'assigned_to' : assign.id,
+                'Project' : project.id
+                
+            }
+            print(task)
+            serializer = TaskSerializer(data=task)
+            if serializer.is_valid():
+                serializer.save()
+                return Response("Task Added successfully",status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)

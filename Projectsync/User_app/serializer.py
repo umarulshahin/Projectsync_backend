@@ -31,9 +31,9 @@ class ProjectsSerializer(serializers.ModelSerializer):
         if not attrs['title'] or not attrs['description'] or not attrs['start_date'] or not attrs['end_date'] :
             raise serializers.ValidationError('All fields are required.')
         elif not re.match(basic_pattern,attrs['title']):
-            raise serializers.ValidationError({"error":"Title must start with a letter and be at least 3 characters long, containing only letters, numbers, or underscores."})
+            raise serializers.ValidationError({"error":"Title must start with a letter and be at least 3 characters long, "})
         elif not re.match(basic_pattern,attrs['description']):
-            raise serializers.ValidationError({"error":"Input cannot be empty or contain only spaces. It must include at least one letter, number, or symbol."})
+            raise serializers.ValidationError({"error":"description cannot be empty or contain only spaces. It must include at least one letter, number, or symbol."})
         elif attrs['start_date'] > attrs['end_date']:
             raise serializers.ValidationError({'error': "Start date cannot be greater than end date."})
         return attrs
@@ -56,3 +56,23 @@ class ProjectsSerializer(serializers.ModelSerializer):
         return project
  
 
+class TaskSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+         
+        model = ProjectTask
+        fields = ['id','title','description','created_by','status','priority','assigned_to','created_at','Project']
+        
+    def validate(self,attrs):
+        
+        base_pattern = r'^(?!\s*$).+'
+        
+        if not attrs['title'] or not attrs['description'] or not attrs['priority'] or not attrs['assigned_to'] or not attrs['Project']: 
+            raise serializers.ValidationError('all fields are required,')
+        
+        elif not re.match(base_pattern,attrs['title']):
+            raise serializers.ValidationError({'error':'Title must start with a letter and be at least 3 characters long.'})
+        elif not re.match(base_pattern,attrs['description']):
+            raise serializers.ValidationError({'error':'description cannot be empty or contain only spaces. It must include at least one letter, number, or symbol.'})
+         
+        return attrs

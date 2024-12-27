@@ -30,7 +30,8 @@ urlpatterns = [
     path('editproject/',EditProject,name='editproject'),
     path('getprojectteam/',GetProjectTeam,name='getprojectteam'),
     path('removeteammember/',RemoveTeamMember,name='removeteammember'),
-    path('addnewmember/',AddNewMemeber,name='addnewmember')
+    path('addnewmember/',AddNewMemeber,name='addnewmember'),
+    path('addnewtask/',AddNewTask,name='addnewtask')
     
     
 ]
