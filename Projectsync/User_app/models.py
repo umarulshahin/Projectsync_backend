@@ -34,7 +34,7 @@ class ProjectTask(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(null=False,blank=False)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='created_user')
-    status = models.CharField(max_length=50,choices=STATUS_CHOICES,blank=False,null=False,default='To-Do')
+    status = models.CharField(max_length=50,choices=STATUS_CHOICES,blank=False,null=False,default='to-do')
     priority = models.CharField(max_length=50,choices=PRIORITY_CHOICES,default='low',null=False,blank=False)
     assigned_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='assigned_to')
     created_at = models.DateField(default=timezone.now)

@@ -359,7 +359,7 @@ def Update_Task(request):
     data = request.data
     id = request.data.get('task_id')
     assigned_to = request.data.get('assignedTo')
-    print(data,'data')
+   
     if not data:
         return Response("data required",status=status.HTTP_400_BAD_REQUEST)
     elif not id:
