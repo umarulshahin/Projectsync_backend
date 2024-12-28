@@ -328,3 +328,21 @@ def Get_Tasks(request):
         return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def Delete_Task(request):
+    
+    id = request.data.get('id')
+    if not id:
+        return Response ('Task id required',status=status.HTTP_400_BAD_REQUEST)
+    try:
+        
+        task = ProjectTask.objects.get(id=id)
+        task.delete()
+        return Response("Task deleted successfully",status=status.HTTP_200_OK)
+    except ProjectTask.DoesNotExist:
+        return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
