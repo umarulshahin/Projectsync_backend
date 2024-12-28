@@ -96,3 +96,13 @@ class TaskSerializer(serializers.ModelSerializer):
                                           assigned_to = assigned_to,
                                           Project =project)
         return task
+    def update(self, instance, validated_data):
+        
+        assigned_to = self.context.get('assigned_to')
+        if assigned_to:
+            instance.assigned_to = assigned_to
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+            
+        instance.save()
+        return instance

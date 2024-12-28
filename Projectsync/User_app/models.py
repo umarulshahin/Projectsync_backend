@@ -24,13 +24,18 @@ class ProjectTeam(models.Model):
 class ProjectTask(models.Model):
     
     STATUS_CHOICES = [('to-do','To-Do'),('in-progress','In-Progress'),('done','Done')]
-    PRIORITY_CHOICES = [('low','Low'),('medium','Medium'),('high','High')]
+    # PRIORITY_CHOICES = [('low','Low'),('Medium','medium'),('high','High')]
+    PRIORITY_CHOICES = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),  # Corrected the value to be lowercase and label to title case
+    ('high', 'High'),
+]
     
     title = models.CharField(max_length=100)
     description = models.TextField(null=False,blank=False)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='created_user')
     status = models.CharField(max_length=50,choices=STATUS_CHOICES,blank=False,null=False,default='To-Do')
-    priority = models.CharField(max_length=50,choices=PRIORITY_CHOICES,default='Low',null=False,blank=False)
+    priority = models.CharField(max_length=50,choices=PRIORITY_CHOICES,default='low',null=False,blank=False)
     assigned_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='assigned_to')
     created_at = models.DateField(default=timezone.now)
     Project = models.ForeignKey(Projects,on_delete=models.CASCADE,related_name='project_by')

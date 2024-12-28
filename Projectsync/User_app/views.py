@@ -251,6 +251,8 @@ def AddNewMemeber(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
     
+    
+#* .......................... Add New Task .........................
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def AddNewTask(request):
@@ -296,7 +298,6 @@ def AddNewTask(request):
                 'Project' : project.id
                 
             }
-            print(task)
             
             serializer = TaskSerializer(data=task,context={'request': request,'assigned_to':assign,'project':project})
             if serializer.is_valid():
@@ -308,7 +309,7 @@ def AddNewTask(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
 
-
+#*............................ Get Tasks ........................
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -330,6 +331,8 @@ def Get_Tasks(request):
         return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
     
 
+#* ............................ Delete Task ........................
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def Delete_Task(request):
@@ -346,3 +349,34 @@ def Delete_Task(request):
         return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+#* ............................ Update Task ........................
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def Update_Task(request):
+    
+    data = request.data
+    id = request.data.get('task_id')
+    assigned_to = request.data.get('assignedTo')
+    print(data,'data')
+    if not data:
+        return Response("data required",status=status.HTTP_400_BAD_REQUEST)
+    elif not id:
+        return Response("Task id required",status=status.HTTP_400_BAD_REQUEST)
+    try:
+       if assigned_to:
+           assigned = CustomUser.objects.get(id=assigned_to)
+           
+       task = ProjectTask.objects.get(id=id)
+       serializer = TaskSerializer(task,data=data,context={'assigned_to':assigned},partial=True)
+       if serializer.is_valid():
+           serializer.save()
+           return Response("Task updated successfully",status=status.HTTP_200_OK)
+       else:
+           return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)       
+    except ProjectTask.DoesNotExist:
+        return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+    

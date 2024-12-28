@@ -33,6 +33,8 @@ urlpatterns = [
     path('addnewmember/',AddNewMemeber,name='addnewmember'),
     path('addnewtask/',AddNewTask,name='addnewtask'),
     path('Get_Tasks/',Get_Tasks,name='get_tasks'),
-    path('delete_task/',Delete_Task,name='delete_task',)
+    path('delete_task/',Delete_Task,name='delete_task'),
+    path('update_task/',Update_Task,name='update_task'),
+    
     
 ]
