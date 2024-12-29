@@ -5,9 +5,11 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from Authentication_app.models import CustomUser
 from . serializer import *
+from User_app.serializer import *
 from rest_framework.permissions import BasePermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import PermissionDenied,AuthenticationFailed
+from User_app.models import *
 
 #* ................... Admin Permission checking , Custom validation ...................
 
@@ -84,3 +86,18 @@ def UserPermission(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
     
+    
+#* ................... Get All Projects For Admin...................
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated,AdminPermission])  
+def GetProjects(request):
+    
+    try:
+        project = Projects.objects.all()
+        serializer = ProjectsSerializer(project,many = True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
+        

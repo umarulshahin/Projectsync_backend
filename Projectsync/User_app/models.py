@@ -24,10 +24,9 @@ class ProjectTeam(models.Model):
 class ProjectTask(models.Model):
     
     STATUS_CHOICES = [('to-do','To-Do'),('in-progress','In-Progress'),('done','Done')]
-    # PRIORITY_CHOICES = [('low','Low'),('Medium','medium'),('high','High')]
     PRIORITY_CHOICES = [
     ('low', 'Low'),
-    ('medium', 'Medium'),  # Corrected the value to be lowercase and label to title case
+    ('medium', 'Medium'),  
     ('high', 'High'),
 ]
     

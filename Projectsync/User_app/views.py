@@ -113,7 +113,7 @@ def Create_Project(request):
 def DeleteProject(request):
     
     id = request.data.get('id')
-    print(id,'data')
+
     if not id:
         return Response("Project id required",status=status.HTTP_400_BAD_REQUEST)
     try:
