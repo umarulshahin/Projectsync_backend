@@ -64,15 +64,17 @@ def Create_Project(request):
     
     user = request.user
     data = request.data.copy()
-    
+    print(data,'data')
     if  user.is_anonymous:
         return Response("User required",status=status.HTTP_400_BAD_REQUEST)
     elif not data:
         return Response("Project data required",status=status.HTTP_400_BAD_REQUEST)
  
-    team = list(data.get('team[]'))
+    team =data.getlist('team[]')
+    print(team,'team 1')
     
-    if str(user.id) not in team:
+    if str(user.id) not in team and user.is_staff == False:
+        
         team.append(user.id)
     try:
         
@@ -85,12 +87,13 @@ def Create_Project(request):
             #* After creating project we have to store project team in to project team table  
             team_member_list = []   
             
+            
             for member in team:
                 employee = CustomUser.objects.get(id=member)
               
                 team_member = ProjectTeam(project=projectdata,employee=employee)
                 team_member_list.append(team_member)
-                
+            
             #* Storing team members in bulk 
             if team_member_list:
                ProjectTeam.objects.bulk_create(team_member_list)

@@ -11,7 +11,7 @@ class Projects(models.Model):
     end_date = models.DateField(null=False, blank=False)
     created_at = models.DateField(default=timezone.now)
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='created_by')
-    status = models.CharField(choices=Choice,max_length=100,null=False,default='Planned')
+    status = models.CharField(choices=Choice,max_length=100,null=False,default='planned')
 
     class Meta:
         ordering = ['-id']
