@@ -106,6 +106,7 @@ def GetProjects(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated,AdminPermission])
 def Bulk_Delete(request):
+    
     data = request.data
     
     try:
