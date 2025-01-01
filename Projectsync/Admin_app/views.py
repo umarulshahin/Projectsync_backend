@@ -101,3 +101,21 @@ def GetProjects(request):
     except Exception as e:
         return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)
         
+    #* .................... Delete Bulk Project Tasks ................
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated,AdminPermission])
+def Bulk_Delete(request):
+    data = request.data
+    
+    try:
+        
+        ProjectTask.objects.filter(id__in=data['id']).delete()
+        
+        return Response("Tasks deleted successfully",status=status.HTTP_200_OK)
+    
+    except ProjectTask.DoesNotExist:
+        return Response("Task not found",status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({str(e)},status=status.HTTP_400_BAD_REQUEST)    

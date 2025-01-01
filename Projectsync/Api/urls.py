@@ -20,6 +20,7 @@ urlpatterns = [
     path('userblockunblock/',UserBlockUnblock,name='userblockunblock'),
     path('userpermission/',UserPermission,name='userpermission'),
     path('getprojects/',GetProjects,name='getprojects'),
+    path('bulk_delete/',Bulk_Delete,name='bulk_delete'),
     
     #* ................ User apis ...................
     
